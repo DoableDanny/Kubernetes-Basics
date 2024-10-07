@@ -4,7 +4,7 @@ This is an example Kubernetes project that creates a simple example Node app wit
 
 The project will look like this:
 
-![example Kubernetes project structure](config.png)
+![example Kubernetes project structure](images/config.png)
 
 #### K8s manifest files
 
