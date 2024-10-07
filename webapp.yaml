@@ -1,27 +1,28 @@
+# Very common to keep Deployment and Service config together
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: webapp-deployment
   labels:
-    app: webapp
+    app: webapp # it is standard to use "app" key for labels
 spec:
-  replicas: 1
+  replicas: 1 # this is a db, so if you wanna scale, you should use StatefulSet, not Deployment
   selector:
     matchLabels:
       app: webapp
-  template:
+  template: # config for pod
     metadata:
       labels:
-        app: webapp
+        app: webapp # all pod replicas have the same label, but are automatically given a unique name
     spec:
       containers:
       - name: webapp
-        image: nanajanashia/k8s-demo-app:v1.0
+        image: nanajanashia/k8s-demo-app:v1.0 # simple example Node app
         ports:
         - containerPort: 3000
-        env:
+        env: # our web app is expecting some env variables, so we can set them here
         - name: USER_NAME
-          valueFrom:
+          valueFrom: # we need to pull this value from our Secret config
             secretKeyRef:
               name: mongo-secret
               key: mongo-user
@@ -29,7 +30,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: mongo-secret
-              key: mongo-password 
+              key: mongo-password
         - name: DB_URL
           valueFrom:
             configMapKeyRef:
@@ -41,11 +42,11 @@ kind: Service
 metadata:
   name: webapp-service
 spec:
-  type: NodePort
-  selector:
-    app: webapp
+  type: NodePort # NodePort is a type of service that makes a pod accessible from outside the Kubernetes cluster by exposing a specific port on each node to the public. This service assigns a port from a defined range (default is 30000-32767), and any traffic that hits this port on any node is forwarded to the designated pod. It's useful for making applications accessible from outside the Kubernetes environment, providing a stable port through which services can be accessed regardless of the node they are running on.
+  selector: # select the pods we want to forward reqs to
+    app: webapp # this needs to match the label name of the pod (service will forward reqs to these pods
   ports:
-    - protocol: TCP
-      port: 3000
-      targetPort: 3000
-      nodePort: 30100
+  - protocol: TCP
+    port: 3000 # the port that this service can be accessed on
+    targetPort: 3000 # should match the containerPort, as that's where the application is accessible. It's where the service should forward reqs to.
+    nodePort: 30100 # public port we can access in the browser (I think)

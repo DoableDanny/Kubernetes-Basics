@@ -1,6 +1,7 @@
+# Very common to use ConfigMap for passing config data
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mongo-config
-data:
-  mongo-url: mongo-service
+  name: mongo-config # some arbitrary name for the ConfigMap
+data: # the actual data
+  mongo-url: mongo-service # this is the "Service" name for mongodb

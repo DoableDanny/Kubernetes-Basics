@@ -3,42 +3,43 @@ kind: Deployment
 metadata:
   name: mongo-deployment
   labels:
-    app: mongo
+    app: mongo # it is standard to use "app" key for labels
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: mongo
-  template:
+  template: # config for pod
     metadata:
       labels:
-        app: mongo
+        app: mongo # all pod replicas have the same label, but are automatically given a unique name
     spec:
       containers:
       - name: mongodb
-        image: mongo:5.0
+        image: mongo:5.0 # can get from docker hub
         ports:
-        - containerPort: 27017
+        - containerPort: 27017 # see docker hub mongo doc for which port it starts on
         env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
+        - name: MONGO_INITDB_ROOT_USERNAME # when the Mongo app is booted up, it will create a user with this INITDB username and password.
+          valueFrom: # we need to pull this value from our Secret config
             secretKeyRef:
-              name: mongo-secret
+              name: mongo-secret # name of secret component
               key: mongo-user
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mongo-secret
-              key: mongo-password  
+              key: mongo-password
 ---
+# --- = YAML unit/section. Allows you to have multiple configurations in one file. It's very common to have Deployment and Service in one file
 apiVersion: v1
 kind: Service
 metadata:
   name: mongo-service
 spec:
-  selector:
-    app: mongo
+  selector: # select the pods we want to forward reqs to
+    app: mongo # this needs to match the label name of the pod (service will forward reqs to these pods)
   ports:
-    - protocol: TCP
-      port: 27017
-      targetPort: 27017
+  - protocol: TCP
+    port: 27017 # the port that this service can be accessed on
+    targetPort: 27017 # should match the containerPort, as that's where the application is accessible. It's where the service should forward reqs to.
