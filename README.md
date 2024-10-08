@@ -1,12 +1,16 @@
 ### Repository for the K8s in 1 hour video (https://www.youtube.com/watch?v=s_o8dwzRlu4)
 
-This is an example Kubernetes project that creates a simple example Node app with MongoDB, and configures the environment with .env vars for the Node app, and configures the Mongo db with an initial user.
+This is an example Kubernetes project that creates a simple example Node app with MongoDB, and configures the server environment with .env vars for the Node app, and configures the Mongo db with an initial user.
 
 The project will look like this:
 
 ![example Kubernetes project structure](images/config.png)
 
+The basics of Kubernetes: https://www.doabledanny.com/kubernetes-basics
+
 #### K8s manifest files
+
+("K8" is shorthand for Kubernetes. It refers to the eight letters between the "K" and "s" in Kubernetes (K**ubernete**s))
 
 - mongo-config.yaml
 - mongo-secret.yaml
@@ -37,10 +41,10 @@ The project will look like this:
 
 Apply command manages applications through files containing K8s resources. -f stands for file. Whatever is defined in the file is created, e.g. ConfigMap, Service, Deployment etc.:
 
-kubectl apply -f mongo-congig.yaml
-kubectl apply -f mongo-secret.yaml
-kubectl apply -f mongo.yaml
-kubectl apply -f webapp.yaml
+    kubectl apply -f mongo-congig.yaml
+    kubectl apply -f mongo-secret.yaml
+    kubectl apply -f mongo.yaml
+    kubectl apply -f webapp.yaml
 
 Notice that we created mongo config and secret first, because the mongo db depends on it, and we create the mongo db before the webapp, because the webapp depends on it.
 
@@ -57,10 +61,11 @@ Notice that we created mongo config and secret first, because the mongo db depen
 ##### get application logs
 
     kubectl logs {pod-name}
-    e.g. kubectl logs webapp-deployment-7f479b7c79-v828v => `app listening on port 3000!`
 
-    You can also stream the logs with -f option:
-    kubectl logs webapp-deployment-7f479b7c79-v828v -f
+e.g. `kubectl logs webapp-deployment-7f479b7c79-v828v` => "app listening on port 3000!"
+
+You can also stream the logs with -f option:
+`kubectl logs webapp-deployment-7f479b7c79-v828v -f`
 
 #### Access app in browser
 
@@ -83,6 +88,16 @@ If you can't access the NodePort service webapp with `MinikubeIP:NodePort`, exec
     minikube service webapp-service
 
 <br />
+
+#### Deleting components
+
+Delete all: `kubectl delete all --all`
+
+Delete configmap: `kubectl delete configmap configmap-name`
+
+Delete secret: `kubectl delete secret secret-name`
+
+Delete service: `kubectl delete svc service-name`
 
 #### Links
 
